@@ -1,18 +1,19 @@
-from time import sleep
+import time
 
 import utils
 import processor
 
-frames = processor.get_frames("examples/example.mp4")
-print()
-print(len(frames), "frames compiled")
-sleep(0.5)
-utils.clear()
+t0 = time.time()
+target_fps = 10
+frames = processor.get_frames("examples/example.mp4", target_fps)
+print(len(frames), "frames compiled in", time.time() - t0, "s")
+time.sleep(2)
+
 for frame in frames:
+  utils.clear()
   rgb_frame, char_frame = frame
 
-  for row in char_frame[450:520]:
-    print("".join(row)[:650])
+  for row in char_frame:
+    print("".join(row))
 
-  sleep(0.5)
-  utils.clear()
+  time.sleep(1/target_fps)
