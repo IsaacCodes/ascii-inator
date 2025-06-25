@@ -5,7 +5,7 @@ import numpy as np
 import utils
 
 #Gets frames from given video/image
-def get_frames(scr: utils.screen, path: str, target_fps):
+def get_frames(scr: utils.screen, path: str, target_fps: int):
 
   #Gets file type
   file_type = mimetypes.guess_file_type(path)[0]

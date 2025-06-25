@@ -38,6 +38,7 @@ class screen():
 
   #Waits for the enter key to be pressed
   def wait_for_enter(self):
+    curses.flushinp()
     #Platform independent newline, "\n" = 10, "\r" = 13, KEY_ENTER
     while self.stdscr.getch() not in (10, 13, curses.KEY_ENTER):
       self.print("\r[ Press Enter to Continue ]")

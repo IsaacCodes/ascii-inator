@@ -18,12 +18,13 @@ def main(stdscr: curses.window):
   #Compilation info
   scr.print(f"{len(frames)} frame(s) compiled in {time.time() - t0} s\n")
   scr.wait_for_enter()
+  curses.curs_set(0)
 
   utils.log_error(stdscr.getmaxyx())
 
   #Loops through frames and displays them
   for frame in frames:
-    stdscr.clear()
+    stdscr.erase()
     rgb_frame, char_frame = frame
 
     for row in char_frame:
@@ -33,6 +34,7 @@ def main(stdscr: curses.window):
     stdscr.refresh()
     time.sleep(1/target_fps)
 
+  curses.curs_set(1)
   scr.wait_for_enter()
 
 #Run main (safely)
