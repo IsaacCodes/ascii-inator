@@ -5,12 +5,12 @@ import numpy as np
 import utils
 
 #Gets frames from given video/image
-def get_frames(path: str, target_fps):
+def get_frames(scr: utils.screen, path: str, target_fps):
 
   #Gets file type
   file_type = mimetypes.guess_file_type(path)[0]
   if file_type == None:
-    raise SystemExit("File type not found")
+    raise SystemExit("Error: File type not found")
 
   #Proccesses video
   if file_type.startswith("video"):
@@ -18,7 +18,7 @@ def get_frames(path: str, target_fps):
     text_frames = []
     cap = cv.VideoCapture(path)
     if not cap.isOpened():
-      raise SystemExit("Failed to proccess video")
+      raise SystemExit("Error: Failed to load video")
 
     #Used to lower fps to target_fps
     fps_stabilizer = 0
@@ -27,7 +27,7 @@ def get_frames(path: str, target_fps):
       target_fps = src_fps
 
     #Read through all frames
-    print("Processing video...")
+    scr.print("Processing video...\n")
     frame_i = 0
     while cap.isOpened():
       ret, frame = cap.read()
@@ -41,7 +41,7 @@ def get_frames(path: str, target_fps):
         fps_stabilizer -= 1
 
       frame_i += 1
-      utils.progress_bar(frame_i/cap.get(cv.CAP_PROP_FRAME_COUNT))
+      scr.progress_bar(frame_i/cap.get(cv.CAP_PROP_FRAME_COUNT))
       
     cap.release()
 
@@ -52,13 +52,13 @@ def get_frames(path: str, target_fps):
     frame = cv.imread(path)
 
     if frame is None:
-      raise SystemExit("Failed to proccess image")
+      raise SystemExit("Error: Failed to proccess image")
     
     return [(frame, process_frame(frame))]
 
   #On error
   else:
-    raise SystemExit("File type not supported")
+    raise SystemExit("Error: File type not supported")
   
 
 
