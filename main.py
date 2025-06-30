@@ -6,8 +6,9 @@ import processor
 def main():
   #examples/example.mp4 or examples/example.jpg
   scr.home()
-  path = input("File path: ")
-  is_colored = input("Would you like to display in color? [y/n] ").lower() in ("y", "yes")
+  src_path = input("Source location: ")
+  save_path = input("Save location (enter for none): ")
+  is_colored = input("Display in color [y/n]: ").lower() in ("y", "yes")
   print()
 
   target_fps = 10
@@ -15,7 +16,7 @@ def main():
 
   #Processes the image into frames
   with scr.term.cbreak(), scr.term.hidden_cursor():
-    frames = processor.get_frames(path, target_fps)
+    frames = processor.get_frames(src_path, save_path, target_fps)
 
   #Compilation info
   print(f"{len(frames)} frame(s) compiled in {time.time() - start_time} s")
@@ -29,7 +30,6 @@ def main():
     #Loops through frames and displays them
     for frame in frames:
       scr.home()
-      debug.print(frame)
       bgr_frame, char_frame = frame
 
       debug.print(f"Frame Size (H,W): {char_frame.shape}")
@@ -43,7 +43,7 @@ def main():
           print(char_frame[y, x], end="")
         print()
 
-      #time.sleep(1/target_fps)
+      time.sleep(1/target_fps)
 
   print(scr.term.normal, end="")
   scr.wait_for_enter()
@@ -55,9 +55,12 @@ with scr.term.fullscreen():
 debug.print("Program stopped")
 
 #TODO:
-# Try to make color look better in general 
-# Color is ridiculuosly slow for video, speed it up
+# Try to make color look better in general (styles?)
+# Color is ridiculuosly slow for video, speed it up (imbed codes in char_frame? avoid so many prints?)
 # See if there are any other general performance optimizations
 # Account for printing time in time.sleep, could help smooth color performance
-# Caching would be neat
 # Would like to supress key codes in input() for scrolling + arrow keys
+# Could spice up loading bar. Ex:
+# print('Progress: [=======>   ]')
+# print(term.bold("60%"))
+# Better screen size management

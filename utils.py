@@ -10,7 +10,7 @@ class Debug():
     self.file.close()
 
   def print(self, *args, **kwargs):
-    print(*args, **kwargs, file=self.file)
+    print(*args, **kwargs, file=self.file, flush=True)
 
 #Controls the terminal screen
 class Screen():

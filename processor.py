@@ -1,22 +1,21 @@
 import mimetypes
+import os
 import cv2 as cv
 import numpy as np
 
 from utils import scr, debug
 
 #Gets frames from given video/image
-def get_frames(path: str, target_fps: int):
+def get_frames(src_path: str, save_path: str, target_fps: int):
 
   #Gets file type
-  file_type = mimetypes.guess_file_type(path)[0]
-  if file_type == None:
-    raise SystemExit("Error: File type not found")
+  file_type = mimetypes.guess_file_type(src_path)[0] or os.path.splitext(src_path)[1].lstrip(".")
 
   #Proccesses video
   if file_type.startswith("video"):
     #Open file
     text_frames = []
-    cap = cv.VideoCapture(path)
+    cap = cv.VideoCapture(src_path)
     if not cap.isOpened():
       raise SystemExit("Error: Failed to load video")
 
@@ -45,21 +44,30 @@ def get_frames(path: str, target_fps: int):
       
     cap.release()
 
-    return text_frames
-
   #Processes images
   elif file_type.startswith("image"):
-    frame = cv.imread(path)
+    frame = cv.imread(src_path)
 
     if frame is None:
       raise SystemExit("Error: Failed to proccess image")
     
-    return [process_frame(frame)]
+    text_frames = [process_frame(frame)]
+
+  elif file_type == "npy":
+    text_frames = np.load(src_path, allow_pickle=True)
 
   #On error
   else:
-    raise SystemExit("Error: File type not supported")
+    raise SystemExit(f"Error: File type {file_type} not supported")
   
+  if save_path:
+    data_obj = np.empty(len(text_frames), dtype=object)
+    for i, pair in enumerate(text_frames):
+      data_obj[i] = pair
+
+    np.save(save_path, data_obj, allow_pickle=True)
+
+  return text_frames
 
 
 LETTER_MAP = np.array(list(" .,-:;coaPO0@#"))
