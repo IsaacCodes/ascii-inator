@@ -1,44 +1,48 @@
 import time
-import curses
 
-import utils
+from utils import scr, debug
 import processor
 
-def main(stdscr: curses.window):
-
-  scr = utils.screen(stdscr)
-
+def main():
   #examples/example.mp4 or examples/example.jpg
-  path = scr.input("File path: ")
-  target_fps = 10
-  t0 = time.time()
+  scr.erase()
+  path = input("File path: ")
 
-  frames = processor.get_frames(scr, path, target_fps)
+  target_fps = 10
+  start_time = time.time()
+
+  frames = processor.get_frames(path, target_fps)
 
   #Compilation info
-  scr.print(f"{len(frames)} frame(s) compiled in {time.time() - t0} s\n")
+  print(f"{len(frames)} frame(s) compiled in {time.time() - start_time} s")
   scr.wait_for_enter()
-  curses.curs_set(0)
 
-  utils.log_error(stdscr.getmaxyx())
+  debug.print(f"width: {scr.term.width} height: {scr.term.height}")
 
-  #Loops through frames and displays them
-  for frame in frames:
-    stdscr.erase()
-    rgb_frame, char_frame = frame
+  with scr.term.hidden_cursor():
+    #Loops through frames and displays them
+    for frame in frames:
+      scr.erase()
+      rgb_frame, char_frame = frame
 
-    for row in char_frame:
-      utils.log_error(f"y, x: {str(stdscr.getyx()).ljust(10)} {"".join(row)}")
-      scr.print("".join(row) + "\n", False)
+      debug.print(char_frame.shape)
 
-    stdscr.refresh()
-    time.sleep(1/target_fps)
+      for y in range(len(char_frame)):
+        for x in range(len(char_frame[0])):
+          b, g, r = rgb_frame[y, x]
+          char = char_frame[y, x]
+          
+          #forcing ansi kinda works, but super hacky and not intended. Maybe just need to abandon curses, idk
+          #TODO: add color-256 / truecolor/ 24-bit color support somehow
+          print(char, end="")
+        print()
 
-  curses.curs_set(1)
+      time.sleep(1/target_fps)
+
   scr.wait_for_enter()
 
 #Run main (safely)
-utils.log_clear()
-utils.log_error("Program started")
-curses.wrapper(main)
-utils.log_error("Execution successfully completed")
+debug.print("Program started")
+with scr.term.fullscreen():
+  main()
+debug.print("Execution successfully completed")

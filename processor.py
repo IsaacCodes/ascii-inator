@@ -2,10 +2,10 @@ import mimetypes
 import cv2 as cv
 import numpy as np
 
-import utils
+from utils import scr, debug
 
 #Gets frames from given video/image
-def get_frames(scr: utils.screen, path: str, target_fps: int):
+def get_frames(path: str, target_fps: int):
 
   #Gets file type
   file_type = mimetypes.guess_file_type(path)[0]
@@ -27,7 +27,7 @@ def get_frames(scr: utils.screen, path: str, target_fps: int):
       target_fps = src_fps
 
     #Read through all frames
-    scr.print("Processing video...\n")
+    print("Processing video...")
     frame_i = 0
     while cap.isOpened():
       ret, frame = cap.read()
