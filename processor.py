@@ -37,7 +37,7 @@ def get_frames(path: str, target_fps: int):
       #Only process every target_fps / src_fps frames so as to reach target_fps
       fps_stabilizer += target_fps / src_fps
       if fps_stabilizer >= 1:
-        text_frames.append((frame, process_frame(frame)))
+        text_frames.append(process_frame(frame))
         fps_stabilizer -= 1
 
       frame_i += 1
@@ -47,14 +47,14 @@ def get_frames(path: str, target_fps: int):
 
     return text_frames
 
-  #Proccesses images
+  #Processes images
   elif file_type.startswith("image"):
     frame = cv.imread(path)
 
     if frame is None:
       raise SystemExit("Error: Failed to proccess image")
     
-    return [(frame, process_frame(frame))]
+    return [process_frame(frame)]
 
   #On error
   else:
@@ -78,4 +78,4 @@ def process_frame(bgr_frame: np.ndarray):
   #Index for final characters
   chars = LETTER_MAP[normalized]
 
-  return chars
+  return bgr_frame, chars
