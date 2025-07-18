@@ -1,8 +1,14 @@
 from blessed import Terminal
+import os
+
+#To get npy ext
+def get_file_ext(file_path: str):
+  return os.path.splitext(file_path)[1].lstrip(".")
 
 #For error logging
 class Debug():
-  def __init__(self, location):
+  def __init__(self, location, enabled):
+    self.enabled = enabled
     self.file = open(location, 'a')
     self.file.truncate(0)
 
@@ -10,7 +16,8 @@ class Debug():
     self.file.close()
 
   def print(self, *args, **kwargs):
-    print(*args, **kwargs, file=self.file, flush=True)
+    if self.enabled:
+      print(*args, **kwargs, file=self.file, flush=True)
 
 #Controls the terminal screen
 class Screen():
@@ -25,8 +32,8 @@ class Screen():
 
   def wait_for_enter(self):
     with self.term.cbreak():
-      #Platform independent newline (hopefully)
       print("[ Press Enter to Continue ]")
+      #Platform independent newline (hopefully)
       while self.term.inkey() not in (self.term.KEY_ENTER, "\n", "\r"): pass
 
   def progress_bar(self, completion: float, length=25):
@@ -39,4 +46,4 @@ class Screen():
       print("\nDone!\n")
 
 scr = Screen()
-debug = Debug("debug.log")
+debug = Debug("debug.log", True)
